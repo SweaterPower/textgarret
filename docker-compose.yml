@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   php:
     image: yiisoftware/yii2-php:8.1-apache
@@ -14,11 +14,13 @@ services:
       PHP_ENABLE_XDEBUG: 1
       XDEBUG_CONFIG: "client_port=9000 start_with_request=yes idekey=PHPSTORM discover_client_host=1"
       XDEBUG_MODE: "debug"
+    networks:
+      - textgarret
 
   db:
     image: mysql:8.0
     cap_add:
-      - SYS_NICE  # CAP_SYS_NICE
+      - SYS_NICE
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
     restart: always
     ports:
@@ -28,3 +30,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - textgarret
+
+networks:
+  textgarret:

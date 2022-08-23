@@ -1,6 +1,10 @@
 <?php
+
+use yii\log\FileTarget;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/test_db.php';
+$services = require __DIR__ . '/services.php';
 
 /**
  * Application configuration shared by all test types
@@ -11,6 +15,8 @@ return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
+        '@data' => '@app/tests/_data',
+        '@files' => '@data/saved_files'
     ],
     'language' => 'en-US',
     'components' => [
@@ -22,7 +28,10 @@ return [
             'basePath' => __DIR__ . '/../web/assets',
         ],
         'urlManager' => [
-            'showScriptName' => true,
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'rules' => [
+            ],
         ],
         'user' => [
             'identityClass' => 'app\models\User',
@@ -37,6 +46,19 @@ return [
             ],
             */
         ],
+        'log' => [
+            'traceLevel' => 0,// YII_DEBUG ? 3 : 0,
+            'targets' => [
+                [
+                    'class' => FileTarget::class,
+                    'logVars' => [],
+                    'levels' => ['error', 'warning', 'trace'],
+                ],
+            ],
+        ],
     ],
     'params' => $params,
+    'container' => [
+        'singletons' => $services,
+    ],
 ];

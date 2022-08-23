@@ -1,0 +1,50 @@
+version: '3'
+
+networks:
+  textgarret:
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      - php
+    networks:
+      - textgarret
+    volumes:
+      - ${APP_DIR}:${WORK_DIR}:delegated
+      #- ./docker/nginx/server.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template
+    environment:
+      - NGINX_HOST=${NGINX_HOST}
+      - NGINX_PORT=${NGINX_PORT}
+      - NGINX_ROOT=${WORK_DIR}/web
+
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - ${MYSQL_PORT}:3306
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - textgarret
+
+  php:
+    image: yiisoftware/yii2-php:7.4-fpm
+#    environment:
+#      - PHP_ENABLE_XDEBUG=1
+    networks:
+      - textgarret
+    volumes:
+      - ${APP_DIR}:${WORK_DIR}:delegated
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      - ./docker/php/php.ini:${PHP_INI_DIR}/php.ini:ro
+      - ./docker/php/xdebug.ini:${PHP_INI_DIR}/xdebug.ini:ro
+      - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./docker/php/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro

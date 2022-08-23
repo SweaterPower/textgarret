@@ -1,6 +1,16 @@
 <?php
-$db = require __DIR__ . '/db.php';
-// test database! Important not to run tests on production or development databases
-$db['dsn'] = 'mysql:host=localhost;dbname=yii2basic_test';
 
-return $db;
+use yii\db\Connection;
+
+$host = getenv('TEST_MYSQL_HOST');
+$db = getenv('TEST_MYSQL_DATABASE');
+$user = getenv('TEST_MYSQL_USER');
+$pass = getenv('TEST_MYSQL_PASSWORD');
+
+return [
+    'class' => Connection::class,
+    'dsn' => "mysql:host={$host};dbname={$db}",
+    'username' => $user,
+    'password' => $pass,
+    'charset' => 'utf8',
+];
